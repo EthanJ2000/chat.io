@@ -7,9 +7,9 @@
     android:layout_marginBottom="20dp"
     >
 
-
     <TextView
         android:id="@+id/sentMessage"
+        android:autoSizeTextType="uniform"
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:maxWidth="200dp"
@@ -19,12 +19,11 @@
         android:layout_marginEnd="25dp"
         android:textColor="#fff"
         android:textSize="15sp"
-        android:padding="13dp"
+        android:padding="15dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
         android:gravity="center"
         android:background="@drawable/sent_bubble"/>
-
 
 
 

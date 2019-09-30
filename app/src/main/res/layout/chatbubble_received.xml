@@ -10,18 +10,20 @@
 
     <TextView
         android:id="@+id/receivedMessage"
+        android:autoSizeTextType="uniform"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
+        android:maxWidth="200dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
         android:textColor="#fff"
         android:textSize="15sp"
-        android:padding="10dp"
+        android:padding="15dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
-        android:gravity="center|left"
+        android:gravity="center"
         android:background="@drawable/received_bubble"/>
 
 
