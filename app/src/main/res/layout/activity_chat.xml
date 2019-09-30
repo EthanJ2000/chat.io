@@ -86,22 +86,7 @@
             android:indeterminateTint="@color/appPrimaryColor"/>
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sentMessages"
-            android:layout_width="match_parent"
-            android:layout_height="520dp"
-            android:layout_gravity="right"
-            android:layout_marginTop="10dp"
-            android:foregroundGravity="right" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/receivedmessages"
-            android:layout_width="match_parent"
-            android:layout_height="520dp"
-            android:layout_gravity="right"
-            android:layout_marginTop="10dp"
-            android:foregroundGravity="right"
-            />
 
 
         <RelativeLayout
