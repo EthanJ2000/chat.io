@@ -125,7 +125,7 @@
                 android:hint="Type a message"
                 android:imeOptions="actionSend"
                 android:inputType="textMultiLine"
-                android:maxLines="50"
+                android:maxLines="51"
                 android:paddingLeft="15dp"
                 android:paddingRight="5dp" />
 
