@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "808353508250",
+    "firebase_url": "https://chatio-25cb6.firebaseio.com",
+    "project_id": "chatio-25cb6",
+    "storage_bucket": "chatio-25cb6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808353508250:android:9e3ed2e20b54dbbb43e823",
+        "android_client_info": {
+          "package_name": "com.example.chatio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808353508250-lrhjs59r4dvg596si9e95pnbua0nggs3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoPrnE-pFzCBnJFKI7DHLbof92ATSMHe0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808353508250-lrhjs59r4dvg596si9e95pnbua0nggs3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

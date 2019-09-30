@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">chat.io</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="edittext_hint"><font size="15">Email</font></string>
+    <string name="email_example">ᵉᵍ kenadams@gmail.com </string>
+    <string name="Search">Search</string>
+    <string name="Cancel">Cancel</string>
+</resources>

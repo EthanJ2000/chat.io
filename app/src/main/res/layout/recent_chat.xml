@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:id="@+id/recentchat_parent_layout"
+    android:layout_marginTop="1dp"
+    android:layout_marginLeft="5dp"
+    android:background="#F5F5F5">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/recentProfilePicture"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:foregroundGravity="center_vertical"
+        android:src="@drawable/default_profile_picture"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/recentUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="24dp"
+        android:layout_toRightOf="@id/recentProfilePicture"
+        android:text="Ken Adams"
+        android:textColor="#000"
+        android:textSize="17sp"
+        app:layout_constraintStart_toEndOf="@+id/recentProfilePicture"
+        app:layout_constraintTop_toTopOf="@+id/recentProfilePicture" />
+
+    <TextView
+        android:id="@+id/recentMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="24dp"
+        android:paddingLeft="1dp"
+        android:text="example@gmail.com"
+        android:textColor="#000"
+        android:textSize="10sp"
+        app:layout_constraintStart_toEndOf="@+id/recentProfilePicture"
+        app:layout_constraintTop_toBottomOf="@+id/recentUsername" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
