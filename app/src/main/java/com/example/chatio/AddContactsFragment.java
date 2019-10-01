@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -173,10 +174,20 @@ public class AddContactsFragment extends Fragment
 							public void onClick(DialogInterface dialogBox, int id)
 							{
 								dialogBox.cancel();
-							}
+								SelectContactsFragment selectContactsFragment = new SelectContactsFragment();
+								FragmentTransaction fragmentTransaction =
+										getActivity().getSupportFragmentManager().beginTransaction();
+								fragmentTransaction.replace(R.id.cardView, selectContactsFragment);
+								fragmentTransaction.commit();
+							} 
 						});
 		
 		AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+		
+		
+		alertDialogAndroid.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		View v = getActivity().getWindow().getDecorView();
+		v.setBackgroundResource(android.R.color.transparent);
 		alertDialogAndroid.show();
 		
 		super.onViewCreated(view, savedInstanceState);

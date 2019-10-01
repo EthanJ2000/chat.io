@@ -2,8 +2,11 @@ package com.example.chatio;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,8 +23,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,18 +56,17 @@ public class Chat extends AppCompatActivity
 	RelativeLayout relativeLayoutChat;
 	CircleImageView userProfilePicture;
 	FloatingActionButton fab;
-	RecyclerView sentMessages;
-	SentRecyclerViewAdapter adapter;
-	ReceivedRecyclerViewAdapter receivedAdapter;
 	private static final String TAG = "Chat";
-	private ArrayList<String> message = new ArrayList<>();
-	private ArrayList<String> arrReceivedMessages = new ArrayList<>();
+	private ArrayList<Message> arrMessage = new ArrayList<>();
 	TextView userName;
 	String currentChat;
 	private DatabaseReference mDatabaseRef;
 	private DatabaseReference mDatabase;
 	private FirebaseAuth auth;
 	public String CurrentUsername;
+	RecyclerView recyclerMessages;
+	MessagesAdapter messagesAdapter;
+	String recievedChat;
 	
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -81,8 +85,10 @@ public class Chat extends AppCompatActivity
 		fab = findViewById(R.id.chatFab);
 		userName = findViewById(R.id.userName);
 		userProfilePicture = findViewById(R.id.userProfilePicture);
-		sentMessages = findViewById(R.id.sentMessages);
 		
+		recyclerMessages = findViewById(R.id.recyclerMessages);
+		messagesAdapter = new MessagesAdapter(arrMessage);
+		recyclerMessages.setAdapter(messagesAdapter);
 		
 		final Intent intent = getIntent();
 		final String setUsername = intent.getStringExtra("username");
@@ -124,11 +130,11 @@ public class Chat extends AppCompatActivity
 						                                         CurrentUsername = name.toString();
 						                                         currentChat = CurrentUsername +
 								                                                       "- " + setUsername;
-						                                         String recievedChat =
+						                                         recievedChat =
 								                                         setUsername + "- " + CurrentUsername;
-						                                         checkForExistingMessages(currentChat, setUsername);
-						                                         checkForRecievedMessages(recievedChat, CurrentUsername);
-						
+						                                         checkForRecievedMessages(recievedChat, CurrentUsername, setUsername, currentChat);
+						                                         checkForExistingMessages(currentChat, recievedChat, setUsername, CurrentUsername);
+						                                         chatProgress.setVisibility(View.GONE);
 						
 					                                         }
 				                                         }
@@ -215,13 +221,13 @@ public class Chat extends AppCompatActivity
 					long time = date.getTime();
 					if (!messageEntry.getText().toString().equals(""))
 					{
-						initSentMessages(messageEntry.getText().toString());
-						initSentRecyclerViewAdapter();
-						sentMessages.smoothScrollToPosition(adapter.getItemCount());
+						initSentMessages(messageEntry.getText().toString(), time);
+						Log.i(TAG, "onClick: " + messageEntry.getText().toString());
+						recyclerMessages.smoothScrollToPosition(messagesAdapter.getItemCount());
 						
-						ChatMessage chatMessage = new ChatMessage(CurrentUsername,
-								messageEntry.getText().toString(), setUsername);
-						sendToDatabase(chatMessage, time);
+						ChatMessage chatMessage = new ChatMessage(setUsername, CurrentUsername,
+								messageEntry.getText().toString(), time);
+						sendToDatabase(chatMessage, time, recievedChat);
 						messageEntry.setText("");
 					}
 					else
@@ -269,41 +275,73 @@ public class Chat extends AppCompatActivity
 		inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
 	}
 	
-	private void initReceivedMessages(String message)
+	
+	private void initSentMessages(String editTextMessage, long timestamp)
 	{
-		arrReceivedMessages.add(message);
+		arrMessage.add(new Message(editTextMessage, Message.ItemType.SENT_TYPE, timestamp));
+		recyclerMessages.setLayoutManager(new LinearLayoutManager(this));
+		
 	}
 	
-	
-	private void initReceivedRecyclerViewAdapter()
+	private void initReceivedMessages(String message, long timestamp)
 	{
-		RecyclerView receivedRecyclerView = findViewById(R.id.receivedmessages);
-		receivedAdapter = new ReceivedRecyclerViewAdapter(arrReceivedMessages, this);
-		receivedRecyclerView.setAdapter(receivedAdapter);
-		receivedRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+		arrMessage.add(new Message(message, Message.ItemType.RECEIVED_TYPE, timestamp));
+		recyclerMessages.setLayoutManager(new LinearLayoutManager(this));
+		
 	}
 	
-	private void initSentMessages(String editTextMessage)
+	public void sendToDatabase(final ChatMessage chatMessage, long time, final String reversedChat)
 	{
-		message.add(editTextMessage);
+		final String strTime = Long.toString(time);
+		
+		Query query = mDatabaseRef.child("chats").child(currentChat);
+		query.addListenerForSingleValueEvent(new ValueEventListener()
+		{
+			@Override
+			public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+			{
+				if (dataSnapshot.exists())
+				{
+					mDatabaseRef.child("chats").child(currentChat).child(strTime).setValue(chatMessage);
+				}
+				else
+				{
+					Query query = mDatabaseRef.child("chats").child(reversedChat);
+					query.addListenerForSingleValueEvent(new ValueEventListener()
+					{
+						@Override
+						public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+						{
+							if (dataSnapshot.exists())
+							{
+								mDatabaseRef.child("chats").child(reversedChat).child(strTime).setValue(chatMessage);
+							}
+							else
+							{
+								mDatabaseRef.child("chats").child(currentChat).child(strTime).setValue(chatMessage);
+							}
+						}
+						
+						@Override
+						public void onCancelled(@NonNull DatabaseError databaseError)
+						{
+						
+						}
+					});
+				}
+			}
+			
+			@Override
+			public void onCancelled(@NonNull DatabaseError databaseError)
+			{
+			
+			}
+		});
+		
 	}
 	
-	private void initSentRecyclerViewAdapter()
-	{
-		Log.d(TAG, "initRecyclerView: called");
-		RecyclerView recyclerView = findViewById(R.id.sentMessages);
-		adapter = new SentRecyclerViewAdapter(message, this);
-		recyclerView.setAdapter(adapter);
-		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-	}
-	
-	public void sendToDatabase(ChatMessage chatMessage, long time)
-	{
-		String strTime = Long.toString(time);
-		mDatabaseRef.child("chats").child(currentChat).child(strTime).setValue(chatMessage);
-	}
-	
-	public void checkForExistingMessages(String currentChat, String setUsername)
+	public void checkForExistingMessages(final String currentChat, final String currentChat2,
+	                                     final String setUsername, final String currentUsername)
 	{
 		Log.i(TAG, "checkForExistingMessages: called");
 		Query query =
@@ -317,77 +355,231 @@ public class Chat extends AppCompatActivity
 				{
 					for (DataSnapshot child : dataSnapshot.getChildren())
 					{
-						initSentMessages(child.child("message").getValue().toString());
-						initSentRecyclerViewAdapter();
-						chatProgress.setVisibility(View.GONE);
-					}
-				}else {
-					chatProgress.setVisibility(View.GONE);
-				}
-			}
-			
-			@Override
-			public void onCancelled(@NonNull DatabaseError databaseError)
-			{
-				
-			}
-		});
-	}
-	
-	public void checkForRecievedMessages(final String currentChat, final String currentUsername)
-	{
-		Query query =
-				mDatabaseRef.child("chats").child(currentChat).orderByChild("receiver").equalTo(currentUsername);
-		query.addChildEventListener(new ChildEventListener()
-		{
-			@Override
-			public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-			{
-				
-				if (dataSnapshot.exists())
-				{
-					for (DataSnapshot child : dataSnapshot.getChildren())
-					{
-						if (child.getKey().equals("message"))
-						{
-							initReceivedMessages(child.getValue(String.class));
-							initReceivedRecyclerViewAdapter();
-						}
+						Log.i(TAG, "onChildAddedSEND:" + child);
+						String message = child.child("message").getValue(String.class);
+						long timestamp = child.child("timestamp").getValue(Long.class);
+						Log.i(TAG, "long " + timestamp);
+						Log.i(TAG, "onChildAddedSEND: here");
+						initSentMessages(message, timestamp);
+						Log.i(TAG, "notification created: ");
 						
 					}
 				}
 				else
 				{
-					Log.i(TAG, "onDataChange: doesnt exist");
+					Query query =
+							mDatabaseRef.child("chats").child(currentChat2).orderByChild("receiver"
+							).equalTo(setUsername);
+					query.addListenerForSingleValueEvent(new ValueEventListener()
+					{
+						@Override
+						public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+						{
+							if (dataSnapshot.exists())
+							{
+								for (DataSnapshot child : dataSnapshot.getChildren())
+								{
+									Log.i(TAG, "onChildAddedSEND:" + child);
+									String message = child.child("message").getValue(String.class);
+									long timestamp = child.child("timestamp").getValue(Long.class);
+									Log.i(TAG, "long " + timestamp);
+									Log.i(TAG, "onChildAddedSEND: here");
+									initSentMessages(message, timestamp);
+									Log.i(TAG, "notification created: ");
+									
+								}
+							}
+						}
+						
+						@Override
+						public void onCancelled(@NonNull DatabaseError databaseError)
+						{
+						
+						}
+					});
 				}
-				
-			}
-			
-			@Override
-			public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-			{
-				
-			}
-			
-			@Override
-			public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
-			{
-				
-			}
-			
-			@Override
-			public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
-			{
-				
 			}
 			
 			@Override
 			public void onCancelled(@NonNull DatabaseError databaseError)
 			{
-				
+			
+			}
+		});
+	}
+	
+	public void checkForRecievedMessages(final String currentChat, final String currentUsername,
+	                                     final String setUsername, final String currentChat2)
+	{
+		Log.i(TAG, "checkForRecievedMessages: called");
+		Log.i(TAG, "checkForRecievedMessages: " + currentUsername);
+		Log.i(TAG, "checkForRecievedMessages: " + currentChat);
+		Log.i(TAG, "checkForRecievedMessages: " + currentChat2);
+		Query query =
+				mDatabaseRef.child("chats").child(currentChat).orderByChild("receiver").equalTo(currentUsername);
+		query.addChildEventListener(new ChildEventListener()
+		{
+			@RequiresApi(api = Build.VERSION_CODES.O)
+			@Override
+			public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+			{
+				Log.i(TAG, "onChildAdded: called");
+				if (dataSnapshot.exists())
+				{
+					Log.i(TAG, "onChildAdded: exists");
+					String message = "";
+					for (DataSnapshot child : dataSnapshot.getChildren())
+					{
+						Log.i(TAG, "onChildKey:" + child.getKey());
+						
+						if (child.getKey().equals("message") && message.equals(""))
+						{
+							message = child.getValue(String.class);
+						}
+						
+						if (child.getKey().equals("timestamp"))
+						{
+							Log.i(TAG, "onChildAdded: here");
+							initReceivedMessages(message, child.getValue(Long.class));
+							Log.i(TAG, "long " + (child.getValue(Long.class)));
+							createNotification(currentUsername, message);
+							Log.i(TAG, "notification created: ");
+							message = "";
+						}
+						
+					}
+				}
+			}
+			
+			@Override
+			public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+			{
+			
+			}
+			
+			@Override
+			public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
+			{
+			
+			}
+			
+			@Override
+			public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+			{
+			
+			}
+			
+			@Override
+			public void onCancelled(@NonNull DatabaseError databaseError)
+			{
+			
 			}
 		});
 		
+		Query query2 =
+				mDatabaseRef.child("chats").child(currentChat2).orderByChild("receiver").equalTo(currentUsername);
+		query2.addChildEventListener(new ChildEventListener()
+		{
+			@RequiresApi(api = Build.VERSION_CODES.O)
+			@Override
+			public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+			{
+				Log.i(TAG, "onChildAdded: called");
+				if (dataSnapshot.exists())
+				{
+					Log.i(TAG, "onChildAdded: exists");
+					String message = "";
+					for (DataSnapshot child : dataSnapshot.getChildren())
+					{
+						Log.i(TAG, "onChildKey:" + child.getKey());
+						
+						if (child.getKey().equals("message") && message.equals(""))
+						{
+							message = child.getValue(String.class);
+						}
+						
+						if (child.getKey().equals("timestamp"))
+						{
+							Log.i(TAG, "onChildAdded: here");
+							initReceivedMessages(message, child.getValue(Long.class));
+							Log.i(TAG, "long " + (child.getValue(Long.class)));
+							createNotification(currentUsername, message);
+							Log.i(TAG, "notification created: ");
+							message = "";
+						}
+						
+					}
+				}
+			}
+			
+			@Override
+			public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+			{
+			
+			}
+			
+			@Override
+			public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
+			{
+			
+			}
+			
+			@Override
+			public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s)
+			{
+			
+			}
+			
+			@Override
+			public void onCancelled(@NonNull DatabaseError databaseError)
+			{
+			
+			}
+		});
+		
+		
 	}
 	
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public void createNotification(String username, String message)
+	{
+		String CHANNEL_ID = "my_channel_01";
+		CharSequence name = "my_channel";
+		String Description = "This is my channel";
+		
+		int NOTIFICATION_ID = 234;
+		
+		NotificationManager notificationManager =
+				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+		{
+			
+			int importance = NotificationManager.IMPORTANCE_HIGH;
+			NotificationChannel newChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+			newChannel.setDescription(Description);
+			newChannel.enableVibration(true);
+			
+			if (notificationManager != null)
+			{
+				notificationManager.createNotificationChannel(newChannel);
+			}
+			
+			
+			NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+					                                     .setContentTitle(username)
+					                                     .setContentText(message)
+					                                     .setSmallIcon(R.mipmap.ic_launcher)
+					                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+			if (notificationManager != null)
+			{
+				
+				notificationManager.notify(NOTIFICATION_ID, builder.build());
+			}
+			
+		}
+		
+	}
 }
+

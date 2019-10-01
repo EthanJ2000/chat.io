@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:id="@+id/receivedchatbubble_parentlayout"
-    android:layout_marginTop="25dp"
+
     >
 
 
@@ -13,14 +13,14 @@
         android:autoSizeTextType="uniform"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
-        android:maxWidth="200dp"
+        android:maxWidth="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
         android:textColor="#fff"
         android:textSize="15sp"
-        android:padding="15dp"
+        android:padding="10dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
         android:gravity="center"

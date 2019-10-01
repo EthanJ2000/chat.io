@@ -78,6 +78,7 @@
         app:cardCornerRadius="28dp">
 
         <ProgressBar
+
             android:id="@+id/chatProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +87,14 @@
             android:indeterminateTint="@color/appPrimaryColor"/>
 
 
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerMessages"
+            android:layout_width="match_parent"
+            android:layout_height="520dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:foregroundGravity="center" />
 
 
         <RelativeLayout

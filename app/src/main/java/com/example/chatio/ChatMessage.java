@@ -5,6 +5,7 @@ public class ChatMessage
 	String receiver;
 	String sender;
 	String message;
+	long timestamp;
 	
 	public ChatMessage()
 	{
@@ -30,11 +31,22 @@ public class ChatMessage
 		this.message = message;
 	}
 	
-	public ChatMessage(String sender, String message, String receiver)
+	public long getTimestamp()
 	{
+		return timestamp;
+	}
+	
+	public void setTimestamp(long timestamp)
+	{
+		this.timestamp = timestamp;
+	}
+	
+	public ChatMessage(String receiver, String sender, String message, long timestamp)
+	{
+		this.receiver = receiver;
 		this.sender = sender;
 		this.message = message;
-		this.receiver = receiver;
+		this.timestamp = timestamp;
 	}
 	
 	public String getSender()
