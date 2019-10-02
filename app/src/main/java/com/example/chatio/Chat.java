@@ -86,9 +86,11 @@ public class Chat extends AppCompatActivity
 		userName = findViewById(R.id.userName);
 		userProfilePicture = findViewById(R.id.userProfilePicture);
 		
+		
 		recyclerMessages = findViewById(R.id.recyclerMessages);
 		messagesAdapter = new MessagesAdapter(arrMessage);
 		recyclerMessages.setAdapter(messagesAdapter);
+		
 		
 		final Intent intent = getIntent();
 		final String setUsername = intent.getStringExtra("username");
@@ -135,7 +137,8 @@ public class Chat extends AppCompatActivity
 						                                         checkForRecievedMessages(recievedChat, CurrentUsername, setUsername, currentChat);
 						                                         checkForExistingMessages(currentChat, recievedChat, setUsername, CurrentUsername);
 						                                         chatProgress.setVisibility(View.GONE);
-						
+						                                         
+						                                         
 					                                         }
 				                                         }
 			                                         }
@@ -223,12 +226,13 @@ public class Chat extends AppCompatActivity
 					{
 						initSentMessages(messageEntry.getText().toString(), time);
 						Log.i(TAG, "onClick: " + messageEntry.getText().toString());
-						recyclerMessages.smoothScrollToPosition(messagesAdapter.getItemCount());
+						
 						
 						ChatMessage chatMessage = new ChatMessage(setUsername, CurrentUsername,
 								messageEntry.getText().toString(), time);
 						sendToDatabase(chatMessage, time, recievedChat);
 						messageEntry.setText("");
+						recyclerMessages.smoothScrollToPosition(messagesAdapter.getItemCount());
 					}
 					else
 					{
@@ -279,14 +283,19 @@ public class Chat extends AppCompatActivity
 	private void initSentMessages(String editTextMessage, long timestamp)
 	{
 		arrMessage.add(new Message(editTextMessage, Message.ItemType.SENT_TYPE, timestamp));
-		recyclerMessages.setLayoutManager(new LinearLayoutManager(this));
+		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+//		linearLayoutManager.setStackFromEnd(true);
+		recyclerMessages.setLayoutManager(linearLayoutManager);
 		
 	}
 	
 	private void initReceivedMessages(String message, long timestamp)
 	{
 		arrMessage.add(new Message(message, Message.ItemType.RECEIVED_TYPE, timestamp));
-		recyclerMessages.setLayoutManager(new LinearLayoutManager(this));
+		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+//		linearLayoutManager.setStackFromEnd(true);
+		recyclerMessages.setLayoutManager(linearLayoutManager);
+		
 		
 	}
 	
@@ -386,6 +395,7 @@ public class Chat extends AppCompatActivity
 									Log.i(TAG, "onChildAddedSEND: here");
 									initSentMessages(message, timestamp);
 									Log.i(TAG, "notification created: ");
+									
 									
 								}
 							}

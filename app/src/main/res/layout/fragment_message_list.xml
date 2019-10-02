@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MessageListFragment">
 
+
     <ProgressBar
         android:id="@+id/messagelistProgress"
         android:layout_width="wrap_content"
