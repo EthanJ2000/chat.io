@@ -102,6 +102,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 			}
 		});
 		
+		Chat.recyclerMessages.smoothScrollToPosition(arrMessage.size());
+		
 		Message message = arrMessage.get(position);
 		
 		

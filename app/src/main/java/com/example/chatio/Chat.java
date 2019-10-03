@@ -64,7 +64,7 @@ public class Chat extends AppCompatActivity
 	private DatabaseReference mDatabase;
 	private FirebaseAuth auth;
 	public String CurrentUsername;
-	RecyclerView recyclerMessages;
+	static RecyclerView recyclerMessages;
 	MessagesAdapter messagesAdapter;
 	String recievedChat;
 	
@@ -137,7 +137,6 @@ public class Chat extends AppCompatActivity
 						                                         checkForRecievedMessages(recievedChat, CurrentUsername, setUsername, currentChat);
 						                                         checkForExistingMessages(currentChat, recievedChat, setUsername, CurrentUsername);
 						                                         chatProgress.setVisibility(View.GONE);
-						                                         
 						                                         
 					                                         }
 				                                         }
@@ -286,7 +285,6 @@ public class Chat extends AppCompatActivity
 		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 //		linearLayoutManager.setStackFromEnd(true);
 		recyclerMessages.setLayoutManager(linearLayoutManager);
-		recyclerMessages.smoothScrollToPosition(arrMessage.size() - 1);
 		
 	}
 	
@@ -296,7 +294,6 @@ public class Chat extends AppCompatActivity
 		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 //		linearLayoutManager.setStackFromEnd(true);
 		recyclerMessages.setLayoutManager(linearLayoutManager);
-		recyclerMessages.smoothScrollToPosition(arrMessage.size() - 1);
 		
 		
 	}
