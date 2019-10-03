@@ -286,6 +286,7 @@ public class Chat extends AppCompatActivity
 		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 //		linearLayoutManager.setStackFromEnd(true);
 		recyclerMessages.setLayoutManager(linearLayoutManager);
+		recyclerMessages.smoothScrollToPosition(arrMessage.size() - 1);
 		
 	}
 	
@@ -295,6 +296,7 @@ public class Chat extends AppCompatActivity
 		LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 //		linearLayoutManager.setStackFromEnd(true);
 		recyclerMessages.setLayoutManager(linearLayoutManager);
+		recyclerMessages.smoothScrollToPosition(arrMessage.size() - 1);
 		
 		
 	}

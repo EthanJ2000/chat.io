@@ -103,6 +103,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 		});
 		
 		Message message = arrMessage.get(position);
+		
+		
 		if (message.getType() == Message.ItemType.RECEIVED_TYPE)
 		{
 			return RECEIVED_TYPE;
