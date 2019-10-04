@@ -8,6 +8,8 @@
     <color name="appPrimaryColor">#AA0FC9</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="colorCursor">#AA0FC9</color>
+    <color name="gray">#E9E9E9</color>
+    <color name="gray_highlighted">#5CAA0FC9</color>
 </resources>
 
 

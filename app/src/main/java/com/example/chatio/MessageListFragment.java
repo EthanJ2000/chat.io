@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,13 +37,14 @@ public class MessageListFragment extends Fragment
 	FloatingActionButton fab;
 	CardView cardView;
 	int numChats;
-	RecentChatAdapter recentChatAdapter;
+	static RecentChatAdapter recentChatAdapter;
 	private ArrayList<String> mRecentUsernames = new ArrayList<>();
 	private ArrayList<String> mRecentEmails = new ArrayList<>();
 	private ArrayList<String> mRecentMessages = new ArrayList<>();
 	public static SelectContactsFragment selectContactsFragment;
 	private DatabaseReference mDatabase;
 	FirebaseAuth auth;
+	
 	
 	
 	public MessageListFragment()
@@ -62,6 +64,7 @@ public class MessageListFragment extends Fragment
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
+		
 		messagelistProgress = getView().findViewById(R.id.messagelistProgress);
 		recentChatAdapter = new RecentChatAdapter(mRecentUsernames, mRecentMessages, mRecentEmails
 				, getContext());
@@ -92,15 +95,7 @@ public class MessageListFragment extends Fragment
 						String username = dataSnapshot.getKey();
 						String email = dataSnapshot.getValue().toString();
 						
-						getLastMessage(username, new MyCallback()
-						{
-							@Override
-							public void onCallback(String value)
-							{
-								Log.i(TAG, "onCallback: "+value);
-							}
-						});
-						initRecentChats(username, email, "test");
+						initRecentChats(username, email, "");
 						initRecentsRecyclerView();
 						messagelistProgress.setVisibility(View.GONE);
 						
@@ -198,142 +193,6 @@ public class MessageListFragment extends Fragment
 		
 	}
 	
-	public void getLastMessage(final String chatUsername, final MyCallback myCallback)
-	{
-		final String[] message = new String[1];
-		final String currentEmail = auth.getCurrentUser().getEmail();
-		DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
-		mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener()
-		{
-			@Override
-			public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-			{
-				for (DataSnapshot dsp : dataSnapshot.getChildren())
-				{
-					User user1 = dsp.getValue(User.class);
-					if (user1 != null && user1.email.equals(currentEmail))
-					{
-						StringBuilder name = new StringBuilder(user1.username.toLowerCase());
-						String[] nameArray = name.toString().split(" ");
-						name = new StringBuilder();
-						for (String item : nameArray)
-						{
-							name.append(String.valueOf(item.charAt(0)).toUpperCase()).append(item.substring(1)).append(" ");
-						}
-						String username = name.toString();
-						
-						String chat1 = username + "- " + chatUsername;
-						String chat2 = chatUsername + "- " + username;
-						Log.i(TAG, "onDataChange: "+chat1);
-						
-						//Start of query 1
-						Query query = mDatabase.child("chats").child(chat1).orderByChild("message").limitToLast(1);
-						query.addChildEventListener(new ChildEventListener()
-						{
-							@Override
-							public void onChildAdded(@NonNull DataSnapshot dataSnapshot,
-							                         @Nullable String s)
-							{
-								if (dataSnapshot.exists())
-								{
-									Log.i(TAG, "onChildAdded: exists");
-									for (DataSnapshot child : dataSnapshot.getChildren())
-									{
-										for (DataSnapshot snap : child.getChildren())
-										{
-											if (snap.getKey().equals("message"))
-											{
-												message[0] = String.valueOf(snap.getValue());
-												myCallback.onCallback(message[0]);
-											}
-										}
-									}
-								}
-							}
-							
-							@Override
-							public void onChildChanged(@NonNull DataSnapshot dataSnapshot,
-							                           @Nullable String s)
-							{
-								
-							}
-							
-							@Override
-							public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
-							{
-								
-							}
-							
-							@Override
-							public void onChildMoved(@NonNull DataSnapshot dataSnapshot,
-							                         @Nullable String s)
-							{
-								
-							}
-							
-							@Override
-							public void onCancelled(@NonNull DatabaseError databaseError)
-							{
-								
-							}
-						});//End of query 1
-						
-						//Start of query 2
-						Query query2 = mDatabase.child("chats").child(chat2).orderByChild("message").limitToLast(1);
-						query2.addChildEventListener(new ChildEventListener()
-						{
-							@Override
-							public void onChildAdded(@NonNull DataSnapshot dataSnapshot,
-							                         @Nullable String s)
-							{
-								if (dataSnapshot.exists())
-								{
-									Log.i(TAG, "onChildAddednew: "+dataSnapshot.getValue());
-								}
-							}
-							
-							@Override
-							public void onChildChanged(@NonNull DataSnapshot dataSnapshot,
-							                           @Nullable String s)
-							{
-							
-							}
-							
-							@Override
-							public void onChildRemoved(@NonNull DataSnapshot dataSnapshot)
-							{
-							
-							}
-							
-							@Override
-							public void onChildMoved(@NonNull DataSnapshot dataSnapshot,
-							                         @Nullable String s)
-							{
-							
-							}
-							
-							@Override
-							public void onCancelled(@NonNull DatabaseError databaseError)
-							{
-							
-							}
-						});//End of query 2
-						
-					}
-				}
-				
-				
-			}
-			
-			@Override
-			public void onCancelled(@NonNull DatabaseError databaseError)
-			{
-				Log.e(TAG, "onCancelled: ", databaseError.toException());
-			}
-			
-			
-			
-		});
-	}
+	
 	
 }

@@ -1,6 +1,7 @@
 package com.example.chatio;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -37,8 +39,11 @@ import java.io.IOException;
 public class Dashboard extends AppCompatActivity implements InternetConnectivityListener
 {
 	static Button btnEditProfilePicture;
-	Button btnBack;
-	Button btnSettings;
+	static Button btnDeleteChat;
+	static Button btnBackOptions;
+	static Button btnBack;
+	static Button btnSettings;
+	ConstraintLayout recentchat_parent_layout;
 	CardView cardView;
 	private static final String TAG = "Dashboard";
 	public static MessageListFragment messageListFragment;
@@ -88,12 +93,31 @@ public class Dashboard extends AppCompatActivity implements InternetConnectivity
 	}
 	
 	@Override
+	protected void onRestart()
+	{
+		super.onRestart();
+		RecentChatAdapter.bSelected = false;
+		recentchat_parent_layout = findViewById(R.id.recentchat_parent_layout);
+		recentchat_parent_layout.setBackgroundResource(R.color.gray);
+		
+		//Show old buttons
+		btnSettings.setVisibility(View.VISIBLE);
+		btnBack.setVisibility(View.VISIBLE);
+		
+		//Hide new buttons
+		btnDeleteChat.setVisibility(View.GONE);
+		btnBackOptions.setVisibility(View.GONE);
+	}
+	
+	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		Dashboard.instance = this;
 		
+		
 		Window w = getWindow();
 		w.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+		
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
@@ -104,6 +128,10 @@ public class Dashboard extends AppCompatActivity implements InternetConnectivity
 				InternetAvailabilityChecker.getInstance();
 		mInternetAvailabilityChecker.addInternetConnectivityListener(this);
 		
+		
+		
+		btnDeleteChat = findViewById(R.id.btnDeleteChat);
+		btnBackOptions =findViewById(R.id.btnBackOptions);
 		txtTitle = findViewById(R.id.txtTitle);
 		context = Dashboard.this;
 		btnBack = findViewById(R.id.btnBack);
@@ -131,6 +159,29 @@ public class Dashboard extends AppCompatActivity implements InternetConnectivity
 				
 			}
 		});
+		
+		btnBackOptions.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				RecentChatAdapter.bSelected = false;
+				recentchat_parent_layout = findViewById(R.id.recentchat_parent_layout);
+				recentchat_parent_layout.setBackgroundResource(R.color.gray);
+
+				//Show old buttons
+				btnSettings.setVisibility(View.VISIBLE);
+				btnBack.setVisibility(View.VISIBLE);
+
+				//Hide new buttons
+				btnDeleteChat.setVisibility(View.GONE);
+				btnBackOptions.setVisibility(View.GONE);
+				
+				
+			}
+		});
+		
+	
 		
 		
 	}
@@ -269,4 +320,6 @@ public class Dashboard extends AppCompatActivity implements InternetConnectivity
 			Log.i(TAG, "onInternetConnectivityChanged: lost connection");
 		}
 	}
+	
+
 }

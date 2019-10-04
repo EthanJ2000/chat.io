@@ -6,7 +6,7 @@
     android:id="@+id/recentchat_parent_layout"
     android:layout_marginTop="1dp"
     android:layout_marginLeft="5dp"
-    android:background="#F5F5F5">
+    android:background="@color/gray">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/recentProfilePicture"

@@ -118,8 +118,9 @@
                 android:focusable="true"
                 android:hint="Type a message"
                 android:imeOptions="actionSend"
-                android:inputType="textMultiLine"
+                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
                 android:maxLines="50"
+                android:maxLength="255"
                 android:paddingLeft="15dp"
                 android:paddingRight="5dp" />
 

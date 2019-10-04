@@ -16,6 +16,17 @@
         android:fitsSystemWindows="false">
 
 
+        <Button
+            android:visibility="gone"
+            android:id="@+id/btnDeleteChat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/trash"/>
+
         <ImageView
             android:id="@+id/logo"
             android:layout_width="60dp"
@@ -47,6 +58,18 @@
 
         <Button
             android:id="@+id/btnBack"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/back"
+            android:onClick="onBackButtonClicked"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/btnBackOptions"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="32dp"

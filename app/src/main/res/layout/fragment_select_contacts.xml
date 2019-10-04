@@ -26,20 +26,14 @@
 
     </RelativeLayout>
 
-    <ScrollView
-        android:id="@+id/contactListContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dp">
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/contactList"
+            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-    </ScrollView>
 
     <RelativeLayout
         android:visibility="visible"

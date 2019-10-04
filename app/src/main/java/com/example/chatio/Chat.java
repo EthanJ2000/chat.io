@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -27,6 +28,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,6 +71,7 @@ public class Chat extends AppCompatActivity
 	static RecyclerView recyclerMessages;
 	MessagesAdapter messagesAdapter;
 	String recievedChat;
+	Boolean isInBackground = true;
 	
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -77,6 +82,9 @@ public class Chat extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
 		
+		
+		isInBackground = false;
+		Log.i(TAG, "isInBackground: "+isInBackground);
 		chatProgress = findViewById(R.id.chatProgress);
 		chatCardView = findViewById(R.id.chatCardView);
 		mDatabase = FirebaseDatabase.getInstance().getReference("users");
@@ -85,6 +93,7 @@ public class Chat extends AppCompatActivity
 		fab = findViewById(R.id.chatFab);
 		userName = findViewById(R.id.userName);
 		userProfilePicture = findViewById(R.id.userProfilePicture);
+		
 		
 		
 		recyclerMessages = findViewById(R.id.recyclerMessages);
@@ -185,8 +194,11 @@ public class Chat extends AppCompatActivity
 			public boolean onTouch(View view, MotionEvent motionEvent)
 			{
 				messageEntry.requestFocus();
-				fab.setTranslationY(-800f);
-				chatbubble_container.setTranslationY(-800f);
+//				fab.setTranslationY(-800f);
+//				chatbubble_container.setTranslationY(-800f);
+				
+			
+				
 				return false;
 			}
 		});
@@ -451,9 +463,13 @@ public class Chat extends AppCompatActivity
 							Log.i(TAG, "onChildAdded: here");
 							initReceivedMessages(message, child.getValue(Long.class));
 							Log.i(TAG, "long " + (child.getValue(Long.class)));
-							createNotification(currentUsername, message);
+							
 							Log.i(TAG, "notification created: ");
+							if (isInBackground){
+								createNotification(setUsername, message);
+							}
 							message = "";
+							
 						}
 						
 					}
@@ -512,9 +528,12 @@ public class Chat extends AppCompatActivity
 							Log.i(TAG, "onChildAdded: here");
 							initReceivedMessages(message, child.getValue(Long.class));
 							Log.i(TAG, "long " + (child.getValue(Long.class)));
-							createNotification(currentUsername, message);
 							Log.i(TAG, "notification created: ");
+							if (isInBackground){
+								createNotification(setUsername, message);
+							}
 							message = "";
+							
 						}
 						
 					}
@@ -575,11 +594,16 @@ public class Chat extends AppCompatActivity
 				notificationManager.createNotificationChannel(newChannel);
 			}
 			
+			PendingIntent contentIntent =
+					PendingIntent.getActivity(this, 0, new Intent(this, Chat.class), 0);
 			
+
+							//:ToDo notification onClick
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
 					                                     .setContentTitle(username)
+														 .setContentIntent(contentIntent)
 					                                     .setContentText(message)
-					                                     .setSmallIcon(R.mipmap.ic_launcher)
+					                                     .setSmallIcon(R.drawable.notification_logo)
 					                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 			if (notificationManager != null)
 			{
@@ -590,5 +614,31 @@ public class Chat extends AppCompatActivity
 		}
 		
 	}
+	
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		isInBackground = true;
+		Log.i(TAG, "isInBackground: "+isInBackground);
+	}
+	
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		isInBackground = true;
+		Log.i(TAG, "isInBackground: "+isInBackground);
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		isInBackground = false;
+		Log.i(TAG, "isInBackground: "+isInBackground);
+	}
+	
+	
 }
 
