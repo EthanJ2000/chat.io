@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -28,9 +30,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.ContentValues.TAG;
+import static java.util.Arrays.asList;
 
 
 public class SettingsFragment extends Fragment {
@@ -44,6 +49,7 @@ public class SettingsFragment extends Fragment {
     public static ProfileFragment profileFragment;
     private DatabaseReference mDatabase;
     public static StorageReference storageReference;
+    ListView settingsList;
 
 
     public SettingsFragment() {
@@ -61,13 +67,19 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        settingsList = getView().findViewById(R.id.settingsList);
         progressBar = getView().findViewById(R.id.progressBar);
         txtUsernameSettings = getView().findViewById(R.id.txtUsernameSettings);
         txtEmailSettings = getView().findViewById(R.id.txtEmailSettings);
         auth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("users");
         setCurrentUserInfo();
-
+    
+        ArrayList<String> settings = new ArrayList<String>(asList("Accounts","Chats","Notifications","Report a bug"));
+        
+        ArrayAdapter<String>  arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,settings);
+        
+        settingsList.setAdapter(arrayAdapter);
 
         displayPicture = getView().findViewById(R.id.displayPicture);
         displayPicture.setOnTouchListener(new View.OnTouchListener() {
@@ -130,20 +142,21 @@ public class SettingsFragment extends Fragment {
     }
 
     public void loadProfilePicture() {
-//        Glide.with(this).load(storageReference).into(displayPicture);
-        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                String url = uri.toString();
-                Glide.with(getContext()).load(url).into(displayPicture);
-                Log.i(TAG, "onSuccess: "+url);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i(TAG, "getDownloadUrl() Failed");
-            }
-        });
+        if ((isAdded())&&(getActivity()!=null)){
+            storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    String url = uri.toString();
+                    Glide.with(getContext()).load(url).into(displayPicture);
+                    Log.i(TAG, "onSuccess: "+url);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i(TAG, "getDownloadUrl() Failed");
+                }
+            });
+        }
 
     }
 

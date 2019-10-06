@@ -21,8 +21,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignUp extends AppCompatActivity {
     EditText edtEmailSignUp;
@@ -53,7 +56,8 @@ public class SignUp extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        
+        
         mDatabase = FirebaseDatabase.getInstance().getReference();
         Login.auth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBar);
@@ -123,27 +127,45 @@ public class SignUp extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), "Weak Password.", Toast.LENGTH_LONG).show();
                                         Toast.makeText(getApplicationContext(), "Password must contain at least 6 characters.", Toast.LENGTH_LONG).show();
                                         break;
+                                    case "ERROR_EMAIL_ALREADY_IN_USE":
+                                        Toast.makeText(getApplicationContext(), "Email already in use.", Toast.LENGTH_LONG).show();
+                                        break;
                                 }
 
                             } else {
-                                User user = new User(username, email);
-                                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                writeNewUser(user, userId);
-                                startActivity(new Intent(SignUp.this, Login.class));
-                                SignUp.this.finish();
-                                progressBar.setVisibility(View.GONE);
+                            
+//                                StringBuilder name = new StringBuilder(username.toLowerCase());
+//                                String[] nameArray = name.toString().split(" ");
+//                                name = new StringBuilder();
+//                                for (String item : nameArray) {
+//                                    name.append(String.valueOf(item.charAt(0)).toUpperCase()).append(item.substring(1)).append(" ");
+//                                }
+//                                final String newUsername = name.toString();
+	
+	
+	                            User user = new User(username, email);
+	                            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+	                            writeNewUser(user, userId);
+	                            startActivity(new Intent(SignUp.this, Login.class));
+	                            SignUp.this.finish();
+	                            progressBar.setVisibility(View.GONE);
+	                            
+                                
+    
+                                }
+                                
+                            
                             }
 
 
-                        }
+                        });
 
-                    });
+                    }
 
 
         }
 
-
-    }
+        
 
     private void writeNewUser(User user, String userid) {
         mDatabase.child("users").child(userid).setValue(user);

@@ -7,16 +7,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +38,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.balysv.materialripple.MaterialRippleLayout;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,6 +77,7 @@ public class Chat extends AppCompatActivity
 	MessagesAdapter messagesAdapter;
 	String recievedChat;
 	Boolean isInBackground = true;
+	Button btnOptions;
 	
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -95,10 +101,13 @@ public class Chat extends AppCompatActivity
 		userProfilePicture = findViewById(R.id.userProfilePicture);
 		
 		
-		
+		relativeLayoutChat = findViewById(R.id.relativeLayoutChat);
 		recyclerMessages = findViewById(R.id.recyclerMessages);
 		messagesAdapter = new MessagesAdapter(arrMessage);
 		recyclerMessages.setAdapter(messagesAdapter);
+		btnOptions = findViewById(R.id.btnOptions);
+		
+	
 		
 		
 		final Intent intent = getIntent();
@@ -160,31 +169,18 @@ public class Chat extends AppCompatActivity
 		                                         }
 		);
 		
-		relativeLayoutChat = findViewById(R.id.relativeLayoutChat);
-		relativeLayoutChat.setOnTouchListener(new View.OnTouchListener()
-		{
-			@Override
-			public boolean onTouch(View view, MotionEvent motionEvent)
-			{
-				hideKeyboard(getCurrentFocus());
-				fab.setTranslationY(-0f);
-				chatbubble_container.setTranslationY(0f);
-				return true;
-			}
-		});
-		chatCardView.setOnTouchListener(new View.OnTouchListener()
-		{
-			@Override
-			public boolean onTouch(View view, MotionEvent motionEvent)
-			{
-				Log.i(TAG, "onTouch: screen touchhed");
-				hideKeyboard(getCurrentFocus());
-				fab.setTranslationY(-0f);
-				chatbubble_container.setTranslationY(0f);
-				return true;
-			}
-		});
 		
+		recyclerMessages.setOnTouchListener(new View.OnTouchListener()
+		{
+			@Override
+			public boolean onTouch(View view, MotionEvent motionEvent)
+			{
+				hideKeyboard();
+				fab.setTranslationY(-0f);
+				chatbubble_container.setTranslationY(0f);
+				return true;
+			}
+		});
 		
 		chatbubble_container = findViewById(R.id.chatbubble_container);
 		messageEntry = findViewById(R.id.messageEntry);
@@ -194,8 +190,8 @@ public class Chat extends AppCompatActivity
 			public boolean onTouch(View view, MotionEvent motionEvent)
 			{
 				messageEntry.requestFocus();
-//				fab.setTranslationY(-800f);
-//				chatbubble_container.setTranslationY(-800f);
+				fab.setTranslationY(-800f);
+				chatbubble_container.setTranslationY(-800f);
 				
 			
 				
@@ -282,12 +278,15 @@ public class Chat extends AppCompatActivity
 	}
 	
 	
-	public void hideKeyboard(View view)
+	public void hideKeyboard()
 	{
-		InputMethodManager inputMethodManager =
-				(InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-		assert inputMethodManager != null;
-		inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		if (getCurrentFocus()!=null){
+			InputMethodManager inputMethodManager =
+					(InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+			assert inputMethodManager != null;
+			inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+		}
+		
 	}
 	
 	
@@ -640,5 +639,13 @@ public class Chat extends AppCompatActivity
 	}
 	
 	
+	public void showPopup(View view)
+	{
+		PopupMenu popup = new PopupMenu(this, view);
+		MenuInflater inflater = popup.getMenuInflater();
+		inflater.inflate(R.menu.chat_options, popup.getMenu());
+		popup.setGravity(Gravity.END);
+		popup.show();
+	}
 }
 

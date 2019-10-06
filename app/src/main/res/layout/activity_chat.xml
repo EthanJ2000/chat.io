@@ -20,7 +20,7 @@
             android:layout_height="35dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="60dp"
-            android:background="@drawable/back"
+            android:background="@drawable/backbutton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,13 +56,15 @@
 
         <Button
             android:id="@+id/btnOptions"
+            android:focusable="false"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginTop="60dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/ic_more_vert_black_24dp"
+            android:background="@drawable/optionsbutton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:onClick="showPopup"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

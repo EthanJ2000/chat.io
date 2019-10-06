@@ -40,6 +40,10 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 	private ArrayList<String> mRecentMessages;
 	private Context context;
 	static boolean bSelected = false;
+	View highlightedView;
+	Viewholder highlightedHolder;
+	DatabaseReference mDatabaseRef;
+	FirebaseAuth auth;
 	
 	
 	public RecentChatAdapter(ArrayList<String> mRecentUsernames, ArrayList<String> mRecentMessages,ArrayList<String> mRecentEmails, Context context)
@@ -61,9 +65,8 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 	}
 	
 	@Override
-	public void onBindViewHolder(@NonNull final Viewholder holder, final int position)
+	public void onBindViewHolder(@NonNull final Viewholder holder,  int position)
 	{
-		
 		Log.i(TAG, "onBindViewHolder: RecentChatAdapter called");
 		StorageReference reference = FirebaseStorage.getInstance().getReference().child(mRecentEmails.get(position)).child("ProfilePicture");
 		
@@ -85,7 +88,6 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 				Log.i(TAG, "getDownloadUrl() Failed");
 			}
 		});
-		
 		holder.recentUsername.setText(mRecentUsernames.get(position));
 		holder.recentMessage.setText(mRecentMessages.get(position));
 		holder.recentchat_parent_layout.setOnClickListener(new View.OnClickListener()
@@ -93,9 +95,8 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 			@Override
 			public void onClick(View view)
 			{
-				Log.i(TAG, "Clicked on: "+mRecentUsernames.get(position));
-				Dashboard.instance.switchToChat(mRecentUsernames.get(position),url[0]);
-				holder.recentchat_parent_layout.setBackgroundResource(R.color.gray);
+				Log.i(TAG, "Clicked on: "+mRecentUsernames.get(holder.getAdapterPosition()));
+				Dashboard.instance.switchToChat(mRecentUsernames.get(holder.getAdapterPosition()),url[0]);
 			}
 		});
 		
@@ -104,10 +105,11 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 			@Override
 			public boolean onLongClick(View view)
 			{
-				Log.i(TAG, "onLongClick: "+mRecentUsernames.get(position));
-				
+				Log.i(TAG, "onLongClick: "+mRecentUsernames.get(holder.getAdapterPosition()));
 				if (!bSelected){
 					holder.recentchat_parent_layout.setBackgroundResource(R.color.gray_highlighted);
+					highlightedView = holder.recentchat_parent_layout;
+					highlightedHolder = holder;
 					//Show new buttons
 					Dashboard.btnDeleteChat.setVisibility(View.VISIBLE);
 					Dashboard.btnBackOptions.setVisibility(View.VISIBLE);
@@ -129,16 +131,55 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 			@Override
 			public void onClick(View view)
 			{
-				Log.i(TAG, "onClick: "+mRecentUsernames.get(position)+" deleted");
+				Log.i(TAG, "onClick: "+mRecentUsernames.get(highlightedHolder.getAdapterPosition())+" deleted");
+				Log.i(TAG, "onClick: "+mRecentEmails.get(highlightedHolder.getAdapterPosition()));
+				auth = FirebaseAuth.getInstance();
+				String uID = auth.getCurrentUser().getUid();
+				String deletedUser = mRecentUsernames.get(highlightedHolder.getAdapterPosition());
+				//Show old buttons
+				Dashboard.btnSettings.setVisibility(View.VISIBLE);
+				Dashboard.btnBack.setVisibility(View.VISIBLE);
+				
+				//Hide new buttons
+				Dashboard.btnDeleteChat.setVisibility(View.GONE);
+				Dashboard.btnBackOptions.setVisibility(View.GONE);
+				
+				mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(uID).child("recents").child(deletedUser);
+				mDatabaseRef.removeValue();
+				
+				mRecentUsernames.remove(highlightedHolder.getAdapterPosition());
+				notifyItemRemoved(highlightedHolder.getAdapterPosition());
+				notifyItemRangeChanged(highlightedHolder.getAdapterPosition(),mRecentUsernames.size());
 			}
 		});
+		
+		
+		Dashboard.btnBackOptions.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				highlightedView.setBackgroundResource(0);
+				
+				//Show old buttons
+				Dashboard.btnSettings.setVisibility(View.VISIBLE);
+				Dashboard.btnBack.setVisibility(View.VISIBLE);
+				
+				//Hide new buttons
+				Dashboard.btnDeleteChat.setVisibility(View.GONE);
+				Dashboard.btnBackOptions.setVisibility(View.GONE);
+				
+				RecentChatAdapter.bSelected = false;
+			}
+		});
+		
 		
 		
 		final String chatUsername = mRecentUsernames.get(position);
 		FirebaseAuth auth = FirebaseAuth.getInstance();
 		final String[] message = new String[1];
 		final String currentEmail = auth.getCurrentUser().getEmail();
-		DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
+		mDatabaseRef = FirebaseDatabase.getInstance().getReference("users");
 		mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener()
 		{
 			@Override
@@ -179,16 +220,6 @@ public class RecentChatAdapter extends RecyclerView.Adapter<RecentChatAdapter.Vi
 										if (child.getKey().equals("message")){
 											Log.i(TAG, "onChildAdded1: "+child.getValue());
 											holder.recentMessage.setText(child.getValue(String.class));
-											holder.recentchat_parent_layout.setBackgroundResource(R.color.gray_highlighted);
-											try
-											{
-												Thread.sleep(1000);
-											}
-											catch(InterruptedException ex)
-											{
-												Thread.currentThread().interrupt();
-											}
-											holder.recentchat_parent_layout.setBackgroundResource(R.color.gray);
 										}
 									}
 									

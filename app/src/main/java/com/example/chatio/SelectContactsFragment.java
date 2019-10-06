@@ -96,6 +96,7 @@ public class SelectContactsFragment extends Fragment
 					{
 						initContacts(Objects.requireNonNull(dataSnapshot.getValue()).toString(),
 								AddContactsFragment.decodeUserEmail(Objects.requireNonNull(dataSnapshot.getKey())));
+						initRecyclerView();
 						if (contactsNum != 0)
 						{
 							noContactsDisplay.setVisibility(View.GONE);
@@ -106,7 +107,7 @@ public class SelectContactsFragment extends Fragment
 							fab2.hide();
 						}
 						
-						initRecyclerView();
+						
 						
 						
 					}
@@ -177,10 +178,10 @@ public class SelectContactsFragment extends Fragment
 	
 	private void initRecyclerView()
 	{
-		RecyclerView recyclerView =
-				Objects.requireNonNull(getView()).findViewById(R.id.contactList);
+		RecyclerView recyclerView = getView().findViewById(R.id.contactList);
 		adapter = new RecyclerViewAdapter(mUsernames, mEmails, getContext());
 		contactsNum = adapter.getItemCount();
+		Log.i(TAG, "initRecyclerView: "+contactsNum);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 	}

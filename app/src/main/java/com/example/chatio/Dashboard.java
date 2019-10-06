@@ -98,7 +98,6 @@ public class Dashboard extends AppCompatActivity implements InternetConnectivity
 		super.onRestart();
 		RecentChatAdapter.bSelected = false;
 		recentchat_parent_layout = findViewById(R.id.recentchat_parent_layout);
-		recentchat_parent_layout.setBackgroundResource(R.color.gray);
 		
 		//Show old buttons
 		btnSettings.setVisibility(View.VISIBLE);
@@ -160,26 +159,7 @@ public class Dashboard extends AppCompatActivity implements InternetConnectivity
 			}
 		});
 		
-		btnBackOptions.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
-			{
-				RecentChatAdapter.bSelected = false;
-				recentchat_parent_layout = findViewById(R.id.recentchat_parent_layout);
-				recentchat_parent_layout.setBackgroundResource(R.color.gray);
-
-				//Show old buttons
-				btnSettings.setVisibility(View.VISIBLE);
-				btnBack.setVisibility(View.VISIBLE);
-
-				//Hide new buttons
-				btnDeleteChat.setVisibility(View.GONE);
-				btnBackOptions.setVisibility(View.GONE);
-				
-				
-			}
-		});
+		
 		
 	
 		

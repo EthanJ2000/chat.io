@@ -25,7 +25,7 @@
             android:layout_height="35dp"
             android:layout_marginTop="60dp"
             android:layout_marginEnd="80dp"
-            android:background="@drawable/trash"/>
+            android:background="@drawable/trashbutton"/>
 
         <ImageView
             android:id="@+id/logo"
@@ -51,7 +51,7 @@
             android:layout_height="35dp"
             android:layout_marginTop="60dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/pencil"
+            android:background="@drawable/pencilbutton"
             android:onClick="onBackButtonClicked"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -62,7 +62,7 @@
             android:layout_height="35dp"
             android:layout_marginStart="80dp"
             android:layout_marginTop="60dp"
-            android:background="@drawable/back"
+            android:background="@drawable/backbutton"
             android:onClick="onBackButtonClicked"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -74,7 +74,7 @@
             android:layout_height="35dp"
             android:layout_marginStart="80dp"
             android:layout_marginTop="60dp"
-            android:background="@drawable/back"
+            android:background="@drawable/backbutton"
             android:onClick="onBackButtonClicked"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -85,7 +85,7 @@
             android:layout_height="35dp"
             android:layout_marginTop="60dp"
             android:layout_marginEnd="80dp"
-            android:background="@drawable/settings"
+            android:background="@drawable/settingsbutton"
             android:onClick="onBtnSettingsClicked"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

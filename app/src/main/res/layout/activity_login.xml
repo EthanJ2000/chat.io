@@ -150,7 +150,7 @@
         android:layout_marginBottom="75dp"
         android:onClick="onSignUpClicked"
         android:text="Sign Up!"
-        android:textColor="#FFF"
+        android:textColor="@drawable/textview_selector"
         android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
